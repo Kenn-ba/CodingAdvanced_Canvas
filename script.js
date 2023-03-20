@@ -22,9 +22,9 @@
     // total number of nodes used (incremented after creation)
     NODES_QTY = 0;
     // avoid nodes spreading
-    ANCHOR_LENGTH = 20;
+    ANCHOR_LENGTH = 150;
     // highlight radius
-    MOUSE_RADIUS = 200;
+    MOUSE_RADIUS = 150;
   
     circ = 2 * Math.PI;
     nodes = [];
@@ -54,7 +54,7 @@
     }
   
     Node.prototype.drawNode = function () {
-      var color = "rgba(255, 0, 0, " + this.brightness + ")";
+      var color = "rgba(255, 0, 213, " + this.brightness + ")";
       ctx.beginPath();
       ctx.arc(
         this.x,
@@ -69,7 +69,7 @@
   
     Node.prototype.drawConnections = function () {
       for (var i = 0; i < this.siblings.length; i++) {
-        var color = "rgba(255, 0, 0, " + this.brightness + ")";
+        var color = "rgba(0, 255, 239, " + this.brightness + ")";
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.siblings[i].x, this.siblings[i].y);
