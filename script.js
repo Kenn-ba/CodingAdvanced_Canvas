@@ -25,6 +25,8 @@
     ANCHOR_LENGTH = 150;
     // highlight radius
     MOUSE_RADIUS = 150;
+    //Array van kleuren
+    const kleuren = ["255, 0, 213","255,0,0","0, 255, 239","255,255,255","0,255,128","255,255,51"];
   
     circ = 2 * Math.PI;
     nodes = [];
@@ -38,6 +40,12 @@
     ctx = canvas.getContext("2d");
     if (!ctx) {
       alert("Ooops! Your browser does not support canvas :'(");
+    }
+
+    function colors(arr){
+        const randomColor = Math.floor(Math.random() * arr.length);
+        const item = arr[randomColor];
+        return item;
     }
   
     function Node(x, y) {
@@ -54,7 +62,7 @@
     }
   
     Node.prototype.drawNode = function () {
-      var color = "rgba(255, 0, 213, " + this.brightness + ")";
+      var color = "rgba("+ colors(kleuren) + ", " + this.brightness + ")";
       ctx.beginPath();
       ctx.arc(
         this.x,
@@ -69,7 +77,7 @@
   
     Node.prototype.drawConnections = function () {
       for (var i = 0; i < this.siblings.length; i++) {
-        var color = "rgba(0, 255, 239, " + this.brightness + ")";
+        var color = "rgba("+ colors(kleuren) + ", " + this.brightness + ")";
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.siblings[i].x, this.siblings[i].y);
