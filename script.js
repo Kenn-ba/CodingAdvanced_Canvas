@@ -4,30 +4,50 @@
       circ,
       nodes,
       mouse,
-      SENSITIVITY,
-      SIBLINGS_LIMIT,
-      DENSITY,
-      NODES_QTY,
-      ANCHOR_LENGTH,
-      MOUSE_RADIUS;
-  
+      sensitivity,
+      siblings_limit,
+      density,
+      nodes_qty,
+      anchor_length,
+      mouse_radius;
+    
     // how close next node must be to activate connection (in px)
     // shorter distance == better connection (line width)
-    SENSITIVITY = 100;
+    sensitivity = 100;
     // note that siblings limit is not 'accurate' as the node can actually have more connections than this value that's because the node accepts sibling nodes with no regard to their current connections this is acceptable because potential fix would not result in significant visual difference
     // more siblings == bigger node
-    SIBLINGS_LIMIT = 10;
+    siblings_limit = 10;
     // default node margin
-    DENSITY = 50;
+    density = 50;
     // total number of nodes used (incremented after creation)
-    NODES_QTY = 0;
+    nodes_qty = 0;
     // avoid nodes spreading
-    ANCHOR_LENGTH = 150;
+    anchor_length = 150;
     // highlight radius
-    MOUSE_RADIUS = 150;
+    mouse_radius = 150;
     //Array van kleuren
-    const kleuren = ["255, 0, 213","255,0,0","0, 255, 239","255,255,255","0,255,128","255,255,51"];
-  
+    const kleuren = ["255, 0, 213","255,0,0","0, 255, 239","255,255,255","0,255,128","255,255,51"]; 
+    
+    const button = document.getElementById("myButton");
+    button.addEventListener("click", function() {
+      siblings_limit=10;
+      sensitivity=100;
+      density=50;
+      anchor_length=150;
+      mouse_radius=150;
+    });
+
+    let count = 0;
+    document.addEventListener("click", function() {
+      siblings_limit+=10;
+      density+=10;
+      sensitivity+=10;
+      anchor_length+=10;
+      mouse_radius+=10;
+    });
+      
+    
+
     circ = 2 * Math.PI;
     nodes = [];
   
@@ -51,8 +71,8 @@
     function Node(x, y) {
       this.anchorX = x;
       this.anchorY = y;
-      this.x = Math.random() * (x - (x - ANCHOR_LENGTH)) + (x - ANCHOR_LENGTH);
-      this.y = Math.random() * (y - (y - ANCHOR_LENGTH)) + (y - ANCHOR_LENGTH);
+      this.x = Math.random() * (x - (x - anchor_length)) + (x - anchor_length);
+      this.y = Math.random() * (y - (y - anchor_length)) + (y - anchor_length);
       this.vx = Math.random() * 2 - 1;
       this.vy = Math.random() * 2 - 1;
       this.energy = Math.random() * 100;
@@ -67,7 +87,7 @@
       ctx.arc(
         this.x,
         this.y,
-        2 * this.radius + (2 * this.siblings.length) / SIBLINGS_LIMIT,
+        2 * this.radius + (2 * this.siblings.length) / siblings_limit,
         0,
         circ
       );
@@ -81,7 +101,7 @@
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.siblings[i].x, this.siblings[i].y);
-        ctx.lineWidth = 1 - calcDistance(this, this.siblings[i]) / SENSITIVITY;
+        ctx.lineWidth = 1 - calcDistance(this, this.siblings[i]) / sensitivity;
         ctx.strokeStyle = color;
         ctx.stroke();
       }
@@ -91,16 +111,16 @@
       this.energy -= 2;
       if (this.energy < 1) {
         this.energy = Math.random() * 100;
-        if (this.x - this.anchorX < -ANCHOR_LENGTH) {
+        if (this.x - this.anchorX < -anchor_length) {
           this.vx = Math.random() * 2;
-        } else if (this.x - this.anchorX > ANCHOR_LENGTH) {
+        } else if (this.x - this.anchorX > anchor_length) {
           this.vx = Math.random() * -2;
         } else {
           this.vx = Math.random() * 4 - 2;
         }
-        if (this.y - this.anchorY < -ANCHOR_LENGTH) {
+        if (this.y - this.anchorY < -anchor_length) {
           this.vy = Math.random() * 2;
-        } else if (this.y - this.anchorY > ANCHOR_LENGTH) {
+        } else if (this.y - this.anchorY > anchor_length) {
           this.vy = Math.random() * -2;
         } else {
           this.vy = Math.random() * 4 - 2;
@@ -113,10 +133,10 @@
     function initNodes() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       nodes = [];
-      for (var i = DENSITY; i < canvas.width; i += DENSITY) {
-        for (var j = DENSITY; j < canvas.height; j += DENSITY) {
+      for (var i = density; i < canvas.width; i += density) {
+        for (var j = density; j < canvas.height; j += density) {
           nodes.push(new Node(i, j));
-          NODES_QTY++;
+          nodes_qty++;
         }
       }
     }
@@ -129,21 +149,21 @@
   
     function findSiblings() {
       var node1, node2, distance;
-      for (var i = 0; i < NODES_QTY; i++) {
+      for (var i = 0; i < nodes_qty; i++) {
         node1 = nodes[i];
         node1.siblings = [];
-        for (var j = 0; j < NODES_QTY; j++) {
+        for (var j = 0; j < nodes_qty; j++) {
           node2 = nodes[j];
           if (node1 !== node2) {
             distance = calcDistance(node1, node2);
-            if (distance < SENSITIVITY) {
-              if (node1.siblings.length < SIBLINGS_LIMIT) {
+            if (distance < sensitivity) {
+              if (node1.siblings.length < siblings_limit) {
                 node1.siblings.push(node2);
               } else {
                 var node_sibling_distance = 0;
                 var max_distance = 0;
                 var s;
-                for (var k = 0; k < SIBLINGS_LIMIT; k++) {
+                for (var k = 0; k < siblings_limit; k++) {
                   node_sibling_distance = calcDistance(node1, node1.siblings[k]);
                   if (node_sibling_distance > max_distance) {
                     max_distance = node_sibling_distance;
@@ -166,7 +186,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       findSiblings();
       var i, node, distance;
-      for (i = 0; i < NODES_QTY; i++) {
+      for (i = 0; i < nodes_qty; i++) {
         node = nodes[i];
         distance = calcDistance(
           {
@@ -175,13 +195,13 @@
           },
           node
         );
-        if (distance < MOUSE_RADIUS) {
-          node.brightness = 1 - distance / MOUSE_RADIUS;
+        if (distance < mouse_radius) {
+          node.brightness = 1 - distance / mouse_radius;
         } else {
           node.brightness = 0;
         }
       }
-      for (i = 0; i < NODES_QTY; i++) {
+      for (i = 0; i < nodes_qty; i++) {
         node = nodes[i];
         if (node.brightness) {
           node.drawNode();
